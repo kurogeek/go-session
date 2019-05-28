@@ -51,5 +51,11 @@ func main() {
 		session.Save()
 		c.JSON(200, gin.H{"count": count})
 	})
+	r.GET("/clear", func(c *gin.Context) {
+		session := sessions.Default(c)
+		session.Clear()
+		session.Save()
+		c.JSON(200, gin.H{"status": "ok"})
+	})
 	r.Run(":8000")
 }
