@@ -8,6 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type User struct {
+	Name string
+	Count int
+}
+
 func main() {
 	r := gin.Default()
 	keys := [][]byte{
@@ -36,6 +41,22 @@ func main() {
 		session.Save()
 		fmt.Println("hello world 4")
 		c.JSON(200, gin.H{"count": count})
+	})
+	r.GET("store/struct", func(c *gin.Context) {
+		session := sessions.Default(c)
+		v := session.Get("user")
+		if v == nil {
+			user := User{
+				Name: "test",
+				Count: 0,
+			}
+		} else {
+			user = v.(User{})
+			user.Count ++
+		}
+		session.Set("user", user)
+		sess.Save()
+		c.JSON(200, gin.H{"user": user})
 	})
 	r.GET("/decr", func(c *gin.Context) {
 		session := sessions.Default(c)
