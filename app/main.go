@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 
 	"github.com/gin-contrib/sessions"
@@ -9,11 +10,13 @@ import (
 )
 
 type User struct {
-	Name string
+	Name  string
 	Count int
 }
 
 func main() {
+	gob.Register(User{})
+
 	r := gin.Default()
 	keys := [][]byte{
 		[]byte("secret-authen123"),
@@ -45,17 +48,23 @@ func main() {
 	r.GET("store/struct", func(c *gin.Context) {
 		session := sessions.Default(c)
 		v := session.Get("user")
+		var user User
+		fmt.Println(v)
 		if v == nil {
-			user := User{
-				Name: "test",
+			user = User{
+				Name:  "test",
 				Count: 0,
 			}
 		} else {
-			user = v.(User{})
-			user.Count ++
+			user = v.(User)
+			user.Count = user.Count + 1
 		}
+		fmt.Println(user)
 		session.Set("user", user)
-		sess.Save()
+		err := session.Save()
+		if err != nil {
+			fmt.Println(err)
+		}
 		c.JSON(200, gin.H{"user": user})
 	})
 	r.GET("/decr", func(c *gin.Context) {

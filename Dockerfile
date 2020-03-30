@@ -6,7 +6,7 @@ WORKDIR /app-dir
 # COPY ./app .
 VOLUME [ "/app-dir" ]
 
-USER panupong
+# USER panupong
 # RUN go get -u -v
 # RUN go build
 
